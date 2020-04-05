@@ -1,4 +1,4 @@
-## 
+# 
 
 ```
 npx create-react-app react_ts_example --template typescript
@@ -15,52 +15,128 @@ npm install --save redux-thunk
 npm install --save-dev @types/redux-thunk
 ```
 
+./src/index.js
+```
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import * as serviceWorker from './serviceWorker';
 
+import { Provider } from 'react-redux';
+import rootReducer from "./js/reducers/index";
 
+const store = createStore(rootReducer);
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);
 
+serviceWorker.unregister();
+```
 
+./src/store/actionTypes.js
+```
+export ActionTypes = {
+    increment: "INCREMENT",
+    decrement: "DECREMENT",
+    countReset: "COUNT_RESET"
+} as const;
+```
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+./src/store/counter/types.ts
+```
+import { Action } from "redux";
+import { ActionTypes } from "../actionTypes";
 
-## Available Scripts
+export type Count = {
+  value: number
+};
 
-In the project directory, you can run:
+interface IncrementAction extends Action {
+  type: typeof ActionTypes.increment;
+}
 
-### `npm start`
+interface DecrementAction extends Action {
+  type: typeof ActionTypes.decrement;
+}
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+interface ResetAction extends Action {
+  type: typeof ActionTypes.countReset;
+}
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+export type CounterActionTypes = IncrementAction | DecrementAction | ResetAction;
+```
 
-### `npm test`
+./src/store/counter/actions.ts
+```
+import { ActionTypes } from "../actionTypes";
+import { CounterActionTypes } from "./types";
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+export const incrementAction = (): CounterActionTypes => {
+  return {
+    type: ActionTypes.increment,
+  };
+};
 
-### `npm run build`
+export const decrementAction = (): CounterActionTypes => {
+  return {
+    type: ActionTypes.decrement,
+  };
+};
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+export const resetAction = (): CounterActionTypes => {
+  return {
+    type: ActionTypes.countReset,
+  };
+};
+```
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+./src/store/counter/reducer.ts
+```
+import { ActionTypes } from "../actionTypes";
+import { Count, CounterActionTypes } from "./types";
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+const initialState: Count = {
+  value: 0,
+};
 
-### `npm run eject`
+export const countReducer = (state = initialState, action: CounterActionTypes); Count => {
+  switch (action.type) {
+    case ActionTypes.increment:  // "INCREMENT"
+      return { value: state.value + 1 };
+    case ActionTypes.decrement:
+      return { value: state.value === 0 ? 0 : state.value - 1 };
+    case ActionTypes.countReset:
+      return { value: 0 };
+    default:
+      const _: never = action;
+      return state;
+  }
+};
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+./src/store/index.ts
+```
+import { combineReducers, createStore } from "redux";
+import { countReducer } from "./counter/reducer";
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+const rootReducer = combineReducers({
+  counter: countReducer,
+});
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+export type RootState = ReturnType<typeof rootReducer>;
+const store = createStore(rootReducer);
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+export default store;
+```
 
-## Learn More
+./src/components/Counter.tsx
+```
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Reference:
+https://qiita.com/ragnar1904/items/72631e4476f94057c630
 
-To learn React, check out the [React documentation](https://reactjs.org/).
