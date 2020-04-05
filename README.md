@@ -1,8 +1,21 @@
 ## 
 
 ```
-npx create-react-app reacthook_redux_ts --template typescript
+npx create-react-app react_ts_example --template typescript
+cd reacthook_redux_ts_example
 ```
+
+```
+npm install --save redux react-redux
+npm install --save-dev @types/redux @types/react-redux
+```
+
+```
+npm install --save redux-thunk
+npm install --save-dev @types/redux-thunk
+```
+
+
 
 
 
